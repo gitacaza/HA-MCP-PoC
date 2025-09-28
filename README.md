@@ -50,9 +50,9 @@ flowchart TB
 
             %% Wyoming Protocol Integration
             subgraph Wyoming[Wyoming Protocol Integration]
-                FastWhisper[fast-whisper (STT)]
-                Piper[piper (TTS)]
-                OpenWakeWord[openWakeWord (Wake word detection)]
+                FastWhisper["fast-whisper (STT)"]
+                Piper["piper (TTS)"]
+                OpenWakeWord["openWakeWord (Wake word detection)"]
             end
         end
     end
