@@ -47,6 +47,13 @@ flowchart TB
             HA_Agent[Conversation Agent]
             HA_Ollama[Ollama Integration]
             HA_MCP[MCP Integration]
+
+            %% Wyoming Protocol Integration
+            subgraph Wyoming[Wyoming Protocol Integration]
+                FastWhisper[fast-whisper (STT)]
+                Piper[piper (TTS)]
+                OpenWakeWord[openWakeWord (Wake word detection)]
+            end
         end
     end
 
@@ -64,3 +71,74 @@ flowchart TB
     HA_MCP --> HA_Agent
     HA_Ollama --> Ollama
     HA_Agent -->|"Answer"| HA_Voice
+
+    %% Wyoming flows
+    HA_Voice --> Wyoming
+    Wyoming --> FastWhisper
+    Wyoming --> Piper
+    Wyoming --> OpenWakeWord
+```
+---
+
+## ⚙️ Components
+
+- **Proxmox Server** → Virtualization layer hosting all VMs  
+- **VM: LLM Host** → runs Ollama LLM backend  
+- **VM: Debian Services** → runs the MCP server (`idf_stop_monitoring_server.py`)  
+- **VM: Home Assistant** → runs:
+  - MCP integration (talks to MCP server)  
+  - Ollama integration (talks to Ollama VM)  
+  - Conversation Agent (links tools + LLM)  
+  - Voice Assistant (user-facing)  
+
+---
+
+## 🚀 Setup (High-Level)
+
+1. **Proxmox VM deployment**
+   - Create 3 VMs: Ollama host, Debian services, Home Assistant  
+
+2. **Ollama VM**
+   - Install Ollama  
+   - Expose API (default port `11434`)  
+
+3. **Debian Services VM**
+   - Clone this repo  
+   - Setup Python venv & dependencies  
+   - Run `idf_stop_monitoring_server.py` (MCP server)  
+   - Ensure it can reach the Île-de-France Mobilité API  
+
+4. **Home Assistant VM**
+   - Add **MCP integration** → point to Debian MCP server  
+   - Add **Ollama integration** → point to Ollama VM  
+   - Create a **Conversation Agent** using `idf_stop_monitoring` tool  
+   - Attach the **Voice Assistant** to the agent  
+
+---
+
+## 📌 Status
+
+- ✅ Working as Proof of Concept  
+- ⚠️ Not production-ready (no auth, limited error handling)  
+- 🎯 Next steps:  
+  - Add authentication / API key management  
+  - Dockerize MCP server  
+  - Improve multi-station & multi-destination support  
+
+---
+
+## 📜 License
+
+MIT License – feel free to use, share, and adapt.  
+
+---
+
+## 🙌 Acknowledgments
+
+- [Île-de-France Mobilité API](https://www.iledefrance-mobilites.fr/) for open transport data  
+- [Model Context Protocol](https://modelcontextprotocol.io/) community  
+- [Home Assistant](https://www.home-assistant.io/) and [Ollama](https://ollama.ai/) teams  
+
+
+
+
